@@ -5,22 +5,32 @@
       <input id="loadXML" type="file" class="visible-xs" v-on:change="uploadXML" />
     </div>
   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <paginator :items="articles" :onPageChange="setPage" :itemsPerPage="itemsPerPage"/>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-12">
       <div class="panel-group" id="panel-429965">
-        <div v-for="art in articles" class="panel panel-success">
+        <div v-for="(art, index) in arts" class="panel panel-success">
           <div class="panel-heading">
-            <a class="panel-title collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="false" aria-controls="collapse1">
+            <a class="panel-title collapsed" role="button" data-toggle="collapse" data-parent="#accordion" :href="'#collapse' + index" aria-expanded="false" aria-controls="collapse1">
 				    {{art.model}}
 				  </a>
           </div>
-          <div id="collapse1" class="panel-collapse collapse">
+          <div :id="'collapse' + index" class="panel-collapse collapse">
             <div class="panel-body">
 							<editor :art="art"/>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+     <paginator :items="articles" :onPageChange="setPage" :currentPage="currentPage" :itemsPerPage="itemsPerPage"/>
     </div>
   </div>
   <div class="row">

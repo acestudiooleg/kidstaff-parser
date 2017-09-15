@@ -31,7 +31,7 @@ export const schemaToFields = schema => {
 };
 
 export const errorHandler = (method, query, value) => tx => {
-  console.log(tx);
+  console.error(tx);
   console.log('===========================');
   console.log({
     method,
@@ -41,12 +41,11 @@ export const errorHandler = (method, query, value) => tx => {
   console.log('\n\n');
 };
 
-export const sqlp = (db, query, params = []) => {
-  return new Promise((s, f) => db.transaction(tx => tx.executeSql(query, params, s, f)));
-};
-export const sql = (db, query, params = []) => {
-  return sqlp(db, query, params).then(_.identity).catch(errorHandler('sql', query, params));
-};
+export const fromTx = f => (_, data) => f(data);
+
+export const sqlp = (db, query, params = []) =>
+  new Promise((s, f) => db.transaction(tx => tx.executeSql(query, params, fromTx(s), fromTx(f))));
+export const sql = (db, query, params = []) => sqlp(db, query, params).catch(errorHandler('sql', query, params));
 export const isTableExists = (db, name) => {
   return new Promise(resolve => {
     sqlp(db, `SELECT COUNT(*) FROM ${name}`).then(() => resolve(true)).catch(() => resolve(false));
@@ -61,12 +60,15 @@ export const createTable = (db, name, schema) => {
     .then(exist => {
       if (!exist) {
         const fields = makeTableFields(schema);
-        return sql(db, `CREATE TABLE ${name} (id REAL UNIQUE, ${fields})`);
+        return sql(db, `CREATE TABLE ${name} (id INTEGER PRIMARY KEY , ${fields})`);
       }
       return Promise.resolve(true);
     });
 };
-export const find = (db, tablename, criteria) => sql(db, `SELECT * FROM ${tablename} WHERE ${criteria}`);
+export const find = async (db, tablename, criteria) => {
+  const {rows} = await sql(db, `SELECT * FROM ${tablename} WHERE ${criteria}`);
+  return Object.keys(rows || {}).map(k => rows[k]);
+};
 
 
 export const insert = (db, tablename, value, onlyOneValueInTable) => {
@@ -87,7 +89,7 @@ export const insert = (db, tablename, value, onlyOneValueInTable) => {
 export const unitInsertOperation = (tx, tablename, value) => {
   return new Promise((resolve, reject) => {
     const {placeholders, fields, values} = schemaToFields(value);
-    tx.executeSql(`INSERT INTO ${tablename} (${fields}) values (${placeholders})`, values, resolve, reject);
+    tx.executeSql(`INSERT INTO ${tablename} (${fields}) values (${placeholders})`, values, fromTx(resolve), fromTx(reject));
   });
 };
 

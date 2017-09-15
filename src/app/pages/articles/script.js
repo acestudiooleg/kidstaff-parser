@@ -7,29 +7,46 @@ import { mapState } from 'vuex';
 import SlotMixin from '@/mixins/slot';
 import VLayout from '@/layouts/default';
 import Editor from '@/components/editor';
+import paginator from '@/components/paginator';
 
 export default {
   mixins: [
     SlotMixin,
   ],
   data() {
-    return {};
+    return {
+      itemsPerPage: 5,
+      currentPage: 1
+    };
   },
   props: {
 
   },
+  mounted() {
+    this.$store.dispatch('articles/getArticlesFromDB');
+  },
   computed: {
     ...mapState({
-      articles: (a) => a.list
-    })
+      articles: ({articles: {list}}) => list
+    }),
+    arts() {
+      return this.cutItems(this.articles, this.currentPage);
+    },
   },
   components: {
     VLayout,
-    Editor
+    Editor,
+    paginator
   },
   methods: {
-    hello() {
-      this.name = 'Hello World Articles';
+    setPage(page) {
+      this.currentPage = page;
+    },
+    cutItems(items = [], page = 1) {
+      const fromI = (page * this.itemsPerPage) - this.itemsPerPage;
+      const toI = (page * this.itemsPerPage);
+
+      return items.slice(fromI, toI);
     },
     uploadXML({ target: { files } }) {
       const fr = new FileReader();

@@ -4,7 +4,6 @@
  * https://vuejs.org/v2/guide/components.html
  */
 
-import SlotMixin from '@/mixins/slot';
 import VueCkeditor from 'vue-ckeditor2';
 
 export default {
@@ -13,7 +12,9 @@ export default {
   },
   data() {
     return {
-      content: 'articles',
+      ckinstance: null,
+      original: '',
+      edited: '',
       config: {
         toolbar: [
           { name: 'clipboard', items: ['Undo', 'Redo'] },
@@ -30,15 +31,33 @@ export default {
       }
     };
   },
+  mounted() {
+    this.original = this.art.description;
+    this.edited = this.art.description;
+  },
   props: {
-
+    art: Object
   },
   computed: {
-
+    contentEqual() {
+      return this.original === this.edited;
+    }
   },
   methods: {
-    hello() {
-      this.name = 'Hello World Editor';
+    onBlur(e) {
+      console.log(this.edited);
+      // //this.edited = e.getData();
+    },
+    onFocus(ckinstance) {
+      this.ckinstance = ckinstance;
+    },
+    reset() {
+      this.edited = this.original;
+      this.ckinstance.setData(this.original);
+      this.ckinstance = null;
+    },
+    save() {
+      console.log('fire');
     }
   }
 };

@@ -3,7 +3,7 @@
     <div class="col-md-12">
       <div class="form-group">
         <label>Модель</label>
-        <input type="text" class="form-control" placeholder="Модель">
+        <input type="text" :value="art.model" class="form-control" placeholder="Модель">
       </div>
     </div>
   </div>
@@ -11,19 +11,19 @@
     <div class="col-md-12">
       <div class="form-group">
         <label>Ключові слова</label>
-        <input type="text" class="form-control" placeholder="Ключові слова">
+        <input type="text" class="form-control" :value="art.keywords" placeholder="Ключові слова">
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      <VueCkeditor v-model="name" :config="config" @blur="onBlur($event)" @focus="onFocus($event)" />
+      <VueCkeditor v-model="edited" :config="config" @blur="onBlur($event)" @focus="onFocus($event)" />
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      <button class="btn btn-success">Save</button>
-      <button class="btn btn-sm btn-danger pull-right">Reset</button>
+      <button @click="save()" :class="{disabled: contentEqual}" contentEqual class="btn btn-success">Save</button>
+      <button @click="reset()" :class="{disabled: !ckinstance}" class="btn btn-sm btn-danger pull-right">Reset</button>
     </div>
   </div>
 </div>

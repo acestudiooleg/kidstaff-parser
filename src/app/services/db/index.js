@@ -3,7 +3,7 @@
  * ============
  *
  */
-import { WDB, TEXT, OBJ, ARRAY } from '@/services/lsdb';
+import { WDB, TEXT, OBJ, ARRAY } from '@/services/wdb';
 
 const createTable = new WDB('kidstaff');
 

@@ -5,7 +5,7 @@
 import {articles, source, myjson} from '@/services/db';
 import {getArticles, convertToJSON} from '@/services/converter';
 
-export const uploadXML = ({ commit }, xml) => {
+export const uploadXML = ({ commit, dispatch }, xml) => {
   const jsonData = convertToJSON(xml);
   const arts = getArticles(xml);
 
@@ -14,10 +14,17 @@ export const uploadXML = ({ commit }, xml) => {
     myjson.insert({data: JSON.stringify(jsonData)}, true),
     articles.bulkInsert(arts)
   ])
-  .then(() => commit('setArticles', arts));
+  .then(() => dispatch('getArticlesFromDB'));
+};
+
+
+export const getArticlesFromDB = async ({ commit }) => {
+  const arts = await articles.find('id > 0');
+  commit('setArticles', arts);
 };
 
 export default {
   uploadXML,
+  getArticlesFromDB
 };
 

@@ -1,0 +1,34 @@
+<v-layout>
+  <div class="row">
+    <div class="col-md-12">
+      <label for="loadXML" class="btn btn-warning">Завантажити новий XML файл</label>
+      <input id="loadXML" type="file" class="visible-xs" v-on:change="uploadXML" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel-group" id="panel-429965">
+        <div v-for="art in articles" class="panel panel-success">
+          <div class="panel-heading">
+            <a class="panel-title collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="false" aria-controls="collapse1">
+				    {{art.model}}
+				  </a>
+          </div>
+          <div id="collapse1" class="panel-collapse collapse">
+            <div class="panel-body">
+							<editor :art="art"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <button class="btn btn-success">Зберегти всі зміни</button>
+    </div>
+    <div class="col-md-6">
+      <button class="btn btn-info">Скачать XML</button>
+    </div>
+  </div>
+</v-layout>

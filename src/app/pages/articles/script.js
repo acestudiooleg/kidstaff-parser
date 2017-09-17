@@ -15,8 +15,10 @@ export default {
   ],
   data() {
     return {
-      itemsPerPage: 5,
-      currentPage: 1
+      itemsPerPage: 10,
+      currentPage: 1,
+      url: null,
+      urlName: ''
     };
   },
   props: {
@@ -55,6 +57,21 @@ export default {
         const srcXML = o.target.result;
         this.$store.dispatch('articles/uploadXML', srcXML);
       };
+    },
+    saveAllArticles() {
+      const sure = confirm('Осторожно, вы не сможете вернуть оригинал какой либо статьи. Вы уверенны?');
+      if (sure) {
+        this.$store.dispatch('articles/saveAllData').then(() => {
+          this.generateXML();
+        });
+      }
+    },
+    generateXML() {
+      this.$store.dispatch('articles/getNewXml').then(xml => {
+        const blob = new Blob([xml], {type: 'application/xml'});
+        this.url = URL.createObjectURL(blob);
+        this.urlName = `kidstaff_${new Date()}`.replace(/ GMT(.*?)$/, '');
+      });
     }
   }
 };

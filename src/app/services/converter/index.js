@@ -15,13 +15,12 @@ export const getArticles = xml => {
   return _.get(json, path, []);
 };
 
-export const makeXML = (articles, json) => {
-  const newJson = _.set(json, path, articles);
-  return x2.js2xml(newJson);
-};
+export const makeXML = x2.js2xml;
 
 export const convertToJSON = val => x2.xml2js(val);
 export const convertToXML = val => x2.js2xml(val);
+export const extractArticles = val => _.get(val, path, []);
+export const injectArticles = (articles, json) => _.set(json, path, articles);
 
 export default {
   convertToJSON,

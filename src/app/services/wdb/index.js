@@ -104,7 +104,7 @@ export const bulkInsert = (db, tablename, list) => {
   .catch(errorHandler('bulkInsert', tablename, [list]));
 };
 
-export const queryValuesSet = val => Object.keys(val).map(k => `${k}=${val[k]}`).join(', ');
+export const queryValuesSet = val => Object.keys(val).map(k => `${k}='${val[k]}'`).join(', ');
 
 export const update = (db, tablename, id, newValue) => {
   const set = queryValuesSet(newValue);

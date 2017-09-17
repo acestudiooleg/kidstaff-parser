@@ -32,32 +32,45 @@ export default {
     };
   },
   mounted() {
-    this.original = this.art.description;
-    this.edited = this.art.description;
+    this.original = this.art;
+    this.edited = {...this.art};
   },
   props: {
     art: Object
   },
   computed: {
     contentEqual() {
-      return this.original === this.edited;
+      const {model, keywords, description} = this.original;
+      const {model: m, keywords: k, description: d} = this.edited;
+      return m === model && k === keywords && d === description;
     }
   },
   methods: {
     onBlur(e) {
-      console.log(this.edited);
+     // console.log(this.edited);
       // //this.edited = e.getData();
     },
     onFocus(ckinstance) {
       this.ckinstance = ckinstance;
     },
     reset() {
-      this.edited = this.original;
-      this.ckinstance.setData(this.original);
+      this.edited = {...this.original};
+      this.ckinstance.setData(this.original.description);
       this.ckinstance = null;
     },
+    resetToOriginal() {
+      const sure = confirm('Осторожно, вы потеряете все измененные данные для этой статьи');
+      if (sure) {
+        const {_id, id} = this.original;
+        this.$store.dispatch('articles/resetToOriginalArticle', {artOriginalId: _id, id}).then((art) => {
+          this.original = art;
+          this.reset();
+        });
+      }
+    },
     save() {
-      console.log('fire');
+      const newArt = {...this.art, ...this.edited};
+      this.$store.dispatch('articles/saveArticle', newArt);
     }
   }
 };

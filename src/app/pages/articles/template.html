@@ -1,22 +1,22 @@
 <v-layout>
   <div class="row">
     <div class="col-md-12">
-      <label for="loadXML" class="btn btn-warning">Завантажити новий XML файл</label>
+      <label for="loadXML" class="btn btn-warning">Загрузить новый XML файл</label>
       <input id="loadXML" type="file" class="visible-xs" v-on:change="uploadXML" />
     </div>
   </div>
-   <div class="row">
+  <div v-if="articles > 0" class="row">
     <div class="col-md-12">
      <paginator :items="articles" :onPageChange="setPage" :itemsPerPage="itemsPerPage"/>
     </div>
   </div>
-  <div class="row">
+  <div v-if="articles > 0" class="row">
     <div class="col-md-12">
       <div class="panel-group" id="panel-429965">
         <div v-for="(art, index) in arts" class="panel panel-success">
           <div class="panel-heading">
             <a class="panel-title collapsed" role="button" data-toggle="collapse" data-parent="#accordion" :href="'#collapse' + index" aria-expanded="false" aria-controls="collapse1">
-				    {{art.model}}
+				    #{{art.id}} - {{art.model}}
 				  </a>
           </div>
           <div :id="'collapse' + index" class="panel-collapse collapse">
@@ -28,17 +28,13 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-     <paginator :items="articles" :onPageChange="setPage" :currentPage="currentPage" :itemsPerPage="itemsPerPage"/>
-    </div>
-  </div>
-  <div class="row">
+  <div v-if="articles > 0" class="row">
     <div class="col-md-6">
-      <button class="btn btn-success">Зберегти всі зміни</button>
+      <button @click="saveAllArticles()" class="btn btn-success">Сохранить все изменения</button>
     </div>
     <div class="col-md-6">
-      <button class="btn btn-info">Скачать XML</button>
+      <button @click="generateXML()" v-if="!url" class="btn btn-info">Сгенерировать новый XML файл</button>
+      <a class="btn btn-info" v-if="url" v-bind:href="url" v-bind:download="urlName">Скачать XML файл</a>
     </div>
   </div>
 </v-layout>

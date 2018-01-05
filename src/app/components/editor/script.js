@@ -58,6 +58,15 @@ export default {
       this.ckinstance.setData(this.original.description);
       this.ckinstance = null;
     },
+    remove() {
+      const sure = confirm('Осторожно, вы потеряете эту статьи');
+      if (sure) {
+        const dsure = confirm('... также ВЫ ПОТЕРЯЕТЕ ВСЕ НЕ СОХРАНЕННЫЕ СТАТЬИ!!!');
+        if (dsure) {
+          this.$store.dispatch('articles/removeArticle', this.original.id);
+        }
+      }
+    },
     resetToOriginal() {
       const sure = confirm('Осторожно, вы потеряете все измененные данные для этой статьи');
       if (sure) {

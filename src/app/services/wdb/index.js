@@ -113,6 +113,8 @@ export const update = (db, tablename, id, newValue) => {
 
 export const remove = (db, tablename, id) => sql(db, `DELETE FROM ${tablename} WHERE id=${id}`);
 
+export const drop = (db, tablename) => sql(db, `DROP TABLE ${tablename}`);
+
 export const createTableFunctions = db => (tablename, schemaToFields) => {
   createTable(db, tablename, schemaToFields);
   return {
@@ -128,6 +130,7 @@ export const createTableFunctions = db => (tablename, schemaToFields) => {
     update: (id, value) => update(db, tablename, id, value),
     find: (criteria) => find(db, tablename, criteria),
     remove: (id) => remove(db, tablename, id),
+    drop: () => drop(db, tablename),
     db,
   };
 };

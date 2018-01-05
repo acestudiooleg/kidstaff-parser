@@ -23,11 +23,24 @@ export const getArticlesFromDB = async ({ commit }) => {
   commit('setArticles', arts);
 };
 
+export const removeAll = async ({ commit }) => {
+  await articles.drop();
+  await myjson.drop();
+  window.location.reload();
+};
+
+
 export const saveArticle = async ({commit}, art) => {
   const a = {...art};
   delete a.id;
   await articles.update(art.id, a);
   commit('updateArticle', art);
+};
+
+export const removeArticle = async ({commit}, id) => {
+  await articles.remove(id);
+  commit('removeArticle', id);
+  window.location.reload();
 };
 
 export const saveAllData = async () => {
@@ -66,6 +79,8 @@ export default {
   saveArticle,
   resetToOriginalArticle,
   getNewXml,
-  saveAllData
+  saveAllData,
+  removeArticle,
+  removeAll
 };
 

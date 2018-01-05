@@ -58,8 +58,20 @@ export default {
         this.$store.dispatch('articles/uploadXML', srcXML);
       };
     },
+    removeAll() {
+      const sure = confirm('ВЫ ПОТЕРЯЕТЕ ВСЕ ДАННЫЕ!!');
+      if (sure) {
+        const dsure = confirm('ВЫ УВЕРЕННЫ??');
+        if (dsure) {
+          const tsure = confirm('ВЫ ТОЧНО УВЕРЕННЫ????');
+          if (tsure) {
+            this.$store.dispatch('articles/removeAll');
+          }
+        }
+      }
+    },
     saveAllArticles() {
-      const sure = confirm('Осторожно, вы не сможете вернуть оригинал какой либо статьи. Вы уверенны?');
+      const sure = window.confirm('Осторожно, вы не сможете вернуть оригинал какой либо статьи. Вы уверенны?');
       if (sure) {
         this.$store.dispatch('articles/saveAllData').then(() => {
           this.generateXML();

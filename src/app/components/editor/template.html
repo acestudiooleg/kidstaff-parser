@@ -21,15 +21,14 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-7">
+    <div class="col-md-8">
       <button @click="save()" :class="{disabled: contentEqual}" contentEqual class="btn btn-success">Сохранить</button>
     </div>
-    <div class="col-md-4">
-      <button @click="reset()" :class="{disabled: contentEqual}" class="btn btn-sm btn-warning pull">Сбросить</button>
-      <button @click="resetToOriginal()"  class="btn btn-sm btn-danger pull-right">Вернуть оригинал</button>
+    <div class="col-md-2">
+      <button @click="reset()" :class="{disabled: contentEqual}" class="btn btn-sm btn-warning pull-right"><i class="fa fa-refresh"></i> Сбросить изменения</button>
     </div>
-    <div class="col-md-1">
-      <button @click="remove()" class="btn btn-sm btn-danger pull-right"><i class="fa fa-trash"></i></button>
+    <div class="col-md-2">
+      <button @click="remove()" class="btn btn-sm btn-danger pull-right"><i class="fa fa-trash"></i> Удалить Статью</button>
     </div>
   </div>
 </div>

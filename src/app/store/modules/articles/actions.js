@@ -2,75 +2,90 @@
  * Actions for the articles module
  * ============
  */
-import {articles, myjson} from '@/services/db';
+import db from '@/services/lsdb';
 import {getArticles, extractArticles, injectArticles, convertToJSON, makeXML} from '@/services/converter';
 import _ from 'lodash';
 
 export const uploadXML = ({ commit, dispatch }, xml) => {
   const jsonData = convertToJSON(xml);
+  console.log(jsonData);
   const arts = getArticles(xml);
 
-  Promise.all([
-    myjson.insert({data: JSON.stringify(jsonData)}, true),
-    articles.bulkInsert(arts)
-  ])
-  .then(() => dispatch('getArticlesFromDB'));
+  (arts || []).forEach(art => db.insert('articles', art));
+
+
+  db.insert('myjson', {data: jsonData});
+  db.commit();
+
+  dispatch('getArticlesFromDB');
 };
 
 
-export const getArticlesFromDB = async ({ commit }) => {
-  const arts = await articles.find('id > 0');
+export const getArticlesFromDB = ({ commit }) => {
+  const arts = db.queryAll('articles').map(el => Object.assign(el, {
+    id: el.ID
+  }));
   commit('setArticles', arts);
 };
 
-export const removeAll = async ({ commit }) => {
-  await articles.drop();
-  await myjson.drop();
+export const removeAll = ({ commit }) => {
+  db.drop();
   window.location.reload();
 };
 
 
-export const saveArticle = async ({commit}, art) => {
+export const saveArticle = ({commit}, art) => {
   const a = {...art};
-  delete a.id;
-  await articles.update(art.id, a);
+  console.log(a);
+  db.update('articles', {ID: art.ID}, () => a);
+  db.commit();
   commit('updateArticle', art);
 };
 
-export const removeArticle = async ({commit}, id) => {
-  await articles.remove(id);
-  commit('removeArticle', id);
+export const removeArticle = ({commit}, ID) => {
+  db.deleteRows('articles', {ID});
+  db.commit();
+  commit('removeArticle', ID);
   window.location.reload();
 };
 
-export const saveAllData = async () => {
-  const arts = await articles.find('id > 0');
-  const myjsonDataStr = await myjson.find('id=1');
-  const artsjson = JSON.parse(myjsonDataStr[0].data);
-  const newJson = injectArticles(arts, artsjson);
-  const myjsonstr = JSON.stringify(newJson);
-  const r = await myjson.update(1, {data: myjsonstr});
-  return r;
-};
-
 export const getNewXml = async () => {
-  const myjsonDataStr = await myjson.find('id=1');
-  const artsjson = JSON.parse(myjsonDataStr[0].data);
-  return makeXML(artsjson);
+  const arts = db.queryAll('articles');
+  const myjsonDataStr = db.queryAll('myjson');
+  const artsjson = myjsonDataStr[0].data;
+  const newJson = injectArticles(arts, artsjson);
+  console.log(newJson);
+  let xml = makeXML(newJson);
+  arts.forEach(el => {
+    xml = xml.replace(new RegExp(`replaceDescription${el.ID}`), `<![CDATA[${el.description2}]]`);
+  });
+  return xml;
 };
 
-export const resetToOriginalArticle = async ({commit}, {artOriginalId, id}) => {
-  const originalJson = await myjson.find('id=1');
-  const original = JSON.parse(originalJson[0].data);
+export const resetToOriginalArticle = ({commit}, {artOriginalId, id}) => {
+  const originalJson = db.queryAll('myjson', { ID: 1 });
+  const original = originalJson[0].data;
   const arts = extractArticles(original);
   const art = _.find(arts, {_id: artOriginalId});
   if (!art) {
     return alert('error - original article is not found');
   }
-  await articles.update(id, art);
+  db.update('articles', {ID: art.id}, () => art);
+  db.commit();
   const arto = {...art, id};
   commit('updateArticle', arto);
   return arto;
+};
+
+export const removeChecked = ({ commit }, checked = []) => {
+  db.deleteRows('articles', row => {
+    const is = Boolean(checked.find(id => id === row.ID));
+    if (is) {
+      commit('removeArticle', row.ID);
+    }
+    return is;
+  });
+  db.commit();
 };
 
 export default {
@@ -79,8 +94,8 @@ export default {
   saveArticle,
   resetToOriginalArticle,
   getNewXml,
-  saveAllData,
   removeArticle,
-  removeAll
+  removeAll,
+  removeChecked
 };
 

@@ -6,18 +6,33 @@
     </div>
   </div>
   <div v-if="articles.length > 0" class="row">
-    <div class="col-md-12">
-     <paginator :items="articles" :onPageChange="setPage" :itemsPerPage="itemsPerPage"/>
+    <div  class="col-md-7">
+     <paginator :items="filteredArts" :onPageChange="setPage" :itemsPerPage="itemsPerPage"/>
+    </div>
+    <div class="col-md-3">
+      <form class="form-inline search">
+        <div class="form-group">
+          <label class="sr-only" for="exampleInputAmount">Поиск</label>
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-search"></i></div>
+            <input type="text" class="form-control" v-model="criteria" id="exampleInputAmount" placeholder="Поиск">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-2 search">
+      <button @click="inverseChecked()" class="btn btn-info pull-right">Интвертировать выделение</button>
     </div>
   </div>
-  <div v-if="articles.length > 0" class="row">
+  <div v-if="articles.length > 0 && !loading" class="row">
     <div class="col-md-12">
       <div class="panel-group" id="panel-429965">
         <div v-for="art in arts" class="panel panel-success">
           <div class="panel-heading">
             <a class="panel-title collapsed" role="button" data-toggle="collapse" data-parent="#accordion" :href="'#collapse' + art.id" aria-expanded="false" aria-controls="collapse1">
-				    #{{art.id}} - {{art.model}}
-				  </a>
+            #{{art.id}} <img width="100px" v-if="mainPicture(art)"  :src="mainPicture(art)"> - {{art.model}}
+          </a>
+          <input  class="pull-right" type="checkbox" :value="art.id" v-model="checkedArts">
           </div>
           <div :id="'collapse' + art.id" class="panel-collapse collapse">
             <div class="panel-body">
@@ -28,16 +43,14 @@
       </div>
     </div>
   </div>
+  <div v-if="loading" class="alert alert-warning">Loading...</div>
   <div v-if="articles.length > 0" class="row">
     <div class="col-md-6">
-      <button @click="saveAllArticles()" class="btn btn-success">Сохранить все изменения</button>
-    </div>
-    <div class="col-md-3">
       <button @click="generateXML()" v-if="!url" class="btn btn-info">Сгенерировать новый XML файл</button>
-      <a class="btn btn-info" v-if="url" v-bind:href="url" v-bind:download="urlName">Скачать XML файл</a>
+      <a class="btn btn-success" v-if="url" v-bind:href="url" v-bind:download="urlName">Скачать XML файл</a>
     </div>
-    <div class="col-md-3">
-      <button @click="removeAll()" v-if="!url" class="btn btn-danger">Удалить Все Данные <i class="fa fa-trash"></i></button>
+    <div class="col-md-6">
+      <button @click="removeChecked()" :class="{disabled: !checkedArts.length}" v-if="!url" class="btn btn-danger pull-right">Удалить выделенные <i class="fa fa-trash"></i></button>
     </div>
   </div>
 </v-layout>

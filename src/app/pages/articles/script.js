@@ -87,6 +87,7 @@ export default {
         const srcXML = o.target.result;
         this.$store.dispatch('articles/uploadXML', srcXML);
         this.loading = false;
+       // document.getElementById('download').click();
       };
     },
     selectArt(art) {

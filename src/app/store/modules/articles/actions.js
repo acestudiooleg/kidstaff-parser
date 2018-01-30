@@ -53,11 +53,14 @@ export const getNewXml = async () => {
   const arts = db.queryAll('articles');
   const myjsonDataStr = db.queryAll('myjson');
   const artsjson = myjsonDataStr[0].data;
-  const newJson = injectArticles(arts, artsjson);
-  console.log(newJson);
+  const cloneArts = _.cloneDeep(arts);
+  const articles = arts.map(el => _.omit(Object.assign(el, {
+    description: `replaceDescription${el.ID}`
+  }), ['ID', 'id']));
+  const newJson = injectArticles(articles, artsjson);
   let xml = makeXML(newJson);
-  arts.forEach(el => {
-    xml = xml.replace(new RegExp(`replaceDescription${el.ID}`), `<![CDATA[${el.description2}]]`);
+  cloneArts.forEach(el => {
+    xml = xml.replace(new RegExp(`replaceDescription${el.ID}`), `<![CDATA[${el.description}]]>`);
   });
   return xml;
 };

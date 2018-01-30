@@ -20,12 +20,7 @@ export const makeXML = x2.js2xml;
 export const convertToJSON = val => x2.xml2js(val);
 export const convertToXML = val => x2.js2xml(val);
 export const extractArticles = val => _.get(val, path, []);
-export const injectArticles = (articles, json) =>
-  _.set(json, path,
-    articles.map(el => Object.assign(el, {
-      description2: el.description,
-      description: `replaceDescription${el.ID}`
-    })));
+export const injectArticles = (articles, json) => _.set(json, path, articles);
 
 export default {
   convertToJSON,

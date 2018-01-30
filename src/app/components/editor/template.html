@@ -1,34 +1,37 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-12">
-      <div class="form-group">
-        <label>Модель</label>
-        <input type="text" v-model="edited.model" class="form-control" placeholder="Модель">
+      <div :class="isError('model')" class="form-group">
+        <label>Заголовок <span>({{charsLeft('model')}})</span></label>
+        <input type="text" v-model="edited.model" class="form-control" placeholder="Заголовок">
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      <div class="form-group">
-        <label>Ключові слова</label>
-        <input type="text" class="form-control" v-model="edited.keywords" placeholder="Ключові слова">
+      <div :class="isError('keywords')" class="form-group">
+        <label>Ключевые слова <span>({{charsLeft('keywords')}})</span></label>
+        <input type="text" class="form-control" v-model="edited.keywords" placeholder="Ключовые слова">
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
+      <div :class="isError('description')" class="form-group">
+        <label>Описание <span>({{charsLeft('description')}})</span></label>
+      </div>
       <VueCkeditor v-model="edited.description" :config="config" @blur="onBlur($event)" @focus="onFocus($event)" />
     </div>
   </div>
   <div class="row">
     <div class="col-md-8">
-      <button @click="save()" :class="{disabled: contentEqual}" contentEqual class="btn btn-success">Сохранить</button>
+      <button @click="save()" v-if="!contentEqual" :class="{disabled: hasErrors, 'btn-danger': hasErrors, 'btn-success':!hasErrors}" class="btn">Сохранить</button>
     </div>
     <div class="col-md-2">
-      <button @click="reset()" :class="{disabled: contentEqual}" class="btn btn-sm btn-warning pull-right"><i class="fa fa-refresh"></i> Сбросить изменения</button>
+      <button @click="reset()" v-if="!contentEqual" :class="{disabled: contentEqual}" class="btn btn-sm btn-warning pull-right">Сбросить изменения</button>
     </div>
     <div class="col-md-2">
-      <button @click="remove()" class="btn btn-sm btn-danger pull-right"><i class="fa fa-trash"></i> Удалить Статью</button>
+      <button @click="remove()" class="btn btn-sm btn-danger pull-right">Удалить Статью</button>
     </div>
   </div>
 </div>

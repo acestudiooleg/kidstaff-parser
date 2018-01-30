@@ -12,9 +12,18 @@ export default {
   },
   data() {
     return {
+      limits: {
+        description: 50000,
+        model: 80,
+        keywords: 100,
+      },
       ckinstance: null,
       original: '',
-      edited: '',
+      edited: {
+        description: '',
+        model: '',
+        keywords: ''
+      },
       config: {
         toolbar: [
           { name: 'clipboard', items: ['Undo', 'Redo'] },
@@ -43,12 +52,27 @@ export default {
       const {model, keywords, description} = this.original;
       const {model: m, keywords: k, description: d} = this.edited;
       return m === model && k === keywords && d === description;
+    },
+    hasErrors() {
+      const { description, keywords, model } = this.edited;
+      const isDesc = description.length > this.limits.description;
+      const isModel = model.length > this.limits.model;
+      const isKey = keywords.length > this.limits.keywords;
+      return isModel || isKey || isDesc;
     }
   },
   methods: {
-    onBlur(e) {
-     // console.log(this.edited);
-      // //this.edited = e.getData();
+    onBlur() {
+
+    },
+    confirm(a) {
+      return confirm(a);
+    },
+    isError(modelName) {
+      return {error: this.edited[modelName].length > this.limits[modelName]};
+    },
+    charsLeft(modelName) {
+      return this.limits[modelName] - this.edited[modelName].length;
     },
     onFocus(ckinstance) {
       this.ckinstance = ckinstance;
@@ -59,16 +83,13 @@ export default {
       this.ckinstance = null;
     },
     remove() {
-      const sure = confirm('Осторожно, вы потеряете эту статьи');
+      const sure = this.confirm('Осторожно, вы потеряете эту статьи');
       if (sure) {
-        const dsure = confirm('... также ВЫ ПОТЕРЯЕТЕ ВСЕ НЕ СОХРАНЕННЫЕ СТАТЬИ!!!');
-        if (dsure) {
-          this.$store.dispatch('articles/removeArticle', this.original.id);
-        }
+        this.$store.dispatch('articles/removeArticle', this.original.id);
       }
     },
     resetToOriginal() {
-      const sure = confirm('Осторожно, вы потеряете все измененные данные для этой статьи');
+      const sure = this.confirm('Осторожно, вы потеряете все измененные данные для этой статьи');
       if (sure) {
         const {_id, id} = this.original;
         this.$store.dispatch('articles/resetToOriginalArticle', {artOriginalId: _id, id}).then((art) => {

@@ -1,7 +1,7 @@
 <v-layout>
   <div class="row">
     <div class="col-md-12">
-      <label for="loadXML" class="btn btn-warning">Загрузить новый XML файл</label>
+      <label for="loadXML" class="btn btn-warning">Загрузить XML файл скачаный с Kidstaff (Импорт)</label>
       <input id="loadXML" type="file" class="visible-xs" v-on:change="uploadXML" />
     </div>
   </div>
@@ -46,11 +46,11 @@
   <div v-if="loading" class="alert alert-warning">Loading...</div>
   <div v-if="articles.length > 0" class="row">
     <div class="col-md-6">
-      <button @click="generateXML()" v-if="!url" class="btn btn-info">Сгенерировать новый XML файл</button>
-      <a class="btn btn-success" v-if="url" v-bind:href="url" v-bind:download="urlName">Скачать XML файл</a>
+      <button @click="generateXML()" v-if="!url" class="btn btn-success">Скачать XML файл (Экспорт)</button>
+      <a class="btn btn-success" style="visibility: hidden" id="downloadUrl" v-bind:href="url" v-bind:download="urlName"></a>
     </div>
     <div class="col-md-6">
-      <button @click="removeChecked()" :class="{disabled: !checkedArts.length}" v-if="!url" class="btn btn-danger pull-right">Удалить выделенные <i class="fa fa-trash"></i></button>
+      <button @click="removeChecked()" :class="{disabled: !checkedArts.length}" v-if="!url" class="btn btn-danger pull-right">Удалить выделенные</button>
     </div>
   </div>
 </v-layout>
